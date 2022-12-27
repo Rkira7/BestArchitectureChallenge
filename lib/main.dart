@@ -52,11 +52,11 @@ class _PostPageState extends State<PostPage> {
                 icon: Icon(Icons.more_vert),
                 itemBuilder: (context) => [
                       PopupMenuItem(
-                        child: Text('使用id排序'),
+                        child: Text('Orden por Id'),
                         value: _sortWithId,
                       ),
                       PopupMenuItem(
-                        child: Text('使用title排序'),
+                        child: Text('Ordenar por Titulo'),
                         value: _sortWithTitle,
                       )
                     ],
@@ -95,7 +95,7 @@ class _PostPageState extends State<PostPage> {
         ));
   }
 
-  void _fetchData(int sort) async {
+  Future<void> _fetchData(int sort) async {
     var url = Uri.https('jsonplaceholder.typicode.com', '/posts');
     var response = await http.get(url);
     print("response=${response.body}");
