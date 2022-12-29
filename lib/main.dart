@@ -1,11 +1,25 @@
 import 'dart:convert';
 
+import 'package:best_architecture_challenge/bloc/post_cubit.dart';
+import 'package:best_architecture_challenge/provider/rest_provider.dart';
+import 'package:best_architecture_challenge/repository/repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 
+//PARA ORDENAR EL REPORTE DE POST
+enum SortOptions { id, title }
+
 void main() {
-  runApp(MyApp());
+  Repository repository = RepositoryImp(RestProvider());
+  PostCubit postCubit = PostCubit(repository);
+
+  runApp(
+      BlocProvider(
+        create: (_) => postCubit,
+        child: MyApp(),
+      ));
 }
 
 class MyApp extends StatelessWidget {
@@ -50,16 +64,17 @@ class _PostPageState extends State<PostPage> {
           actions: <Widget>[
             PopupMenuButton(
                 icon: Icon(Icons.more_vert),
-                itemBuilder: (context) => [
-                      PopupMenuItem(
-                        child: Text('Orden por Id'),
-                        value: _sortWithId,
-                      ),
-                      PopupMenuItem(
-                        child: Text('Ordenar por Titulo'),
-                        value: _sortWithTitle,
-                      )
-                    ],
+                itemBuilder: (context) =>
+                [
+                  PopupMenuItem(
+                    child: Text('Orden por Id'),
+                    value: _sortWithId,
+                  ),
+                  PopupMenuItem(
+                    child: Text('Ordenar por Titulo'),
+                    value: _sortWithTitle,
+                  )
+                ],
                 onSelected: (int value) {
                   _fetchData(value);
                 })
@@ -75,7 +90,9 @@ class _PostPageState extends State<PostPage> {
                 padding: EdgeInsets.all(8),
                 child: RichText(
                   text: TextSpan(
-                    style: DefaultTextStyle.of(context).style,
+                    style: DefaultTextStyle
+                        .of(context)
+                        .style,
                     children: <TextSpan>[
                       TextSpan(
                         text: "$id. $title",

@@ -19,6 +19,11 @@ void main(){
     expect(articulos[1].id, 2);
     expect(articulos[2].id, 3);
   });
+
+  test("Respuesta Incorrecta", () async {
+    final provider = _getProvider("test/provider_test/mock_response_error.json");
+    expect(provider.getListaPost(), throwsA(predicate((exeption) => exeption is TypeError)));
+  });
 }
 
 //SIMULAR UNA RESPUESTA DEL SERVIDOR
@@ -31,6 +36,6 @@ RestProvider _getProvider(String rutaMock) {
 
 MockClient _mockClientProvider (String rutaMock) {
   return MockClient((_) async {
-   return Response(await File(rutaMock).readAsString(), 200, headers: headers); //EL statusCode es el 200
+   return Response(await File(rutaMock).readAsString(), 200, headers: headers); //EL statusCode ES EL 200
   });
 }
