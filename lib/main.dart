@@ -38,8 +38,9 @@ class MyApp extends StatelessWidget {
 }
 
 class PostPage extends StatelessWidget {
-  PostPage({Key? key, required this.title}) : super(key: key);
   final String title;
+
+  const PostPage({Key? key, required this.title}) : super(key: key);
 
 
   @override

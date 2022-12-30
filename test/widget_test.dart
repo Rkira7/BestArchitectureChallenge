@@ -5,26 +5,32 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:best_architecture_challenge/bloc/post_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:best_architecture_challenge/main.dart';
 
+import 'bloc_test/post_cubit_test.dart';
+
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+  testWidgets('Mostrsar en la pantalla 2 elementos', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      BlocProvider<PostCubit>(
+        create: (context) => PostCubit(MockRepoImp()),
+        child: const MaterialApp(
+          home: PostPage(title: 'Titulo'),
+        ),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpAndSettle();
+    //Asegúrese de que los widgets aparezcan en la pantalla exactamente una vez. Para este propósito, utilice el .findsOneWidget
+    final buscarTitle = find.text('Titulo');
+    expect(buscarTitle, findsOneWidget); //BUSCA EL TEXTO
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    //expect(find.byKey(const Key('1')), findsOneWidget); //Encuentra un widget con un específico Key
+    //expect(find.byKey(Key("3")), findsOneWidget);
   });
 }
