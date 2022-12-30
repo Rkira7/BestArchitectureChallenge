@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 
+import 'model/post.dart';
+
 //PARA ORDENAR EL REPORTE DE POST
 enum SortOptions { id, title }
 
@@ -35,100 +37,70 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class PostPage extends StatefulWidget {
+class PostPage extends StatelessWidget {
   PostPage({Key? key, required this.title}) : super(key: key);
-
   final String title;
 
-  @override
-  _PostPageState createState() => _PostPageState();
-}
-
-class _PostPageState extends State<PostPage> {
-  static const int _sortWithId = 1;
-  static const int _sortWithTitle = 2;
-
-  List<dynamic> _posts = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchData(_sortWithId);
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Text(title),
           actions: <Widget>[
-            PopupMenuButton(
+            PopupMenuButton<SortOptions>(
                 icon: Icon(Icons.more_vert),
                 itemBuilder: (context) =>
                 [
                   PopupMenuItem(
                     child: Text('Orden por Id'),
-                    value: _sortWithId,
+                    value: SortOptions.id,
                   ),
                   PopupMenuItem(
                     child: Text('Ordenar por Titulo'),
-                    value: _sortWithTitle,
+                    value: SortOptions.title,
                   )
                 ],
-                onSelected: (int value) {
-                  _fetchData(value);
-                })
+                onSelected: context.read<PostCubit>().sort),
           ],
         ),
-        body: ListView.separated(
-          itemCount: _posts.length,
-          itemBuilder: (context, index) {
-            String id = _posts[index]['id'].toString();
-            String title = _posts[index]['title'].toString();
-            String body = _posts[index]['body'].toString();
-            return Container(
-                padding: EdgeInsets.all(8),
-                child: RichText(
-                  text: TextSpan(
-                    style: DefaultTextStyle
-                        .of(context)
-                        .style,
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: "$id. $title",
-                        style: TextStyle(fontSize: 18, color: Colors.red),
-                      ),
-                      TextSpan(
-                        text: '\n' + body,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ));
-          },
-          separatorBuilder: (context, index) {
-            return Divider();
-          },
-        ));
+        body: BlocBuilder<PostCubit, PostState>(
+            builder: (_, state){
+              if(state is PostReady){
+                return ListView.separated(
+                  itemCount: state.listPost.length,
+                  itemBuilder: (context, index) {
+                   Post items = state.listPost[index];
+                    return Container(
+                        padding: EdgeInsets.all(8),
+                        child: RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: "${items.id}. ${items.title}",
+                                style: TextStyle(fontSize: 18, color: Colors.red),
+                              ),
+                              TextSpan(
+                                text: '\n' + items.body,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ));
+                  },
+                  separatorBuilder: (context, index) {
+                    return Divider();
+                  },
+                );
+
+              }
+              return Center(child: CircularProgressIndicator(),);
+            }
+        )
+
+
+        );
   }
 
-  Future<void> _fetchData(int sort) async {
-    var url = Uri.https('jsonplaceholder.typicode.com', '/posts');
-    var response = await http.get(url);
-    print("response=${response.body}");
-    List<dynamic> result = jsonDecode(response.body);
-    if (sort == _sortWithId) {
-      result.sort((a, b) {
-        return int.parse(a['id'].toString())
-            .compareTo(int.parse(b['id'].toString()));
-      });
-    } else if (sort == _sortWithTitle) {
-      result.sort((a, b) {
-        return a['title'].toString().compareTo(b['title'].toString());
-      });
-    }
-    setState(() {
-      _posts = result;
-    });
-  }
 }

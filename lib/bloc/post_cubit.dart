@@ -37,7 +37,7 @@ class PostCubit extends Cubit<PostState>{
         listPost.sort((a, b) => a.id.compareTo(b.id));
         break;
     }
-    emit(PostReady(listPost));
+    emit(PostReady(listPost, _sortby));
 
   }
 }
@@ -54,9 +54,10 @@ class PostLoading extends PostState{}
 //ESTADO CUANDO
 class PostReady extends PostState{
   final List<Post> listPost;
+  final SortOptions sortby;
 
-  PostReady(this.listPost);
+  PostReady(this.listPost, this.sortby);
 
   @override
-  List<Object?> get props => [listPost];
+  List<Object?> get props => [listPost, sortby];
 }
