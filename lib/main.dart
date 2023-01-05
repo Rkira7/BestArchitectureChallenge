@@ -62,6 +62,8 @@ class PostPage extends StatelessWidget {
                     value: SortOptions.title,
                   )
                 ],
+                //LO MISMO CON EL CALLBACK
+                //onSelected:(SortOptions value) => context.read<PostCubit>().sort(value)),
                 onSelected: context.read<PostCubit>().sort),
           ],
         ),

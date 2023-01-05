@@ -6,9 +6,11 @@ import 'package:best_architecture_challenge/repository/repository.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+//MOCK PARA INYECTAR EN PRUEBAS EN LUGAR DE LA API
 class MockRepoImp extends Repository{
   @override
   Future<List<Post>> getPostList() async {
+    print("Test");
     return [
       Post(2, "titulo", "Contenido"),
       Post(1, "titulo2", "Contenido2"),
