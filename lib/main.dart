@@ -1,8 +1,12 @@
 import 'dart:convert';
 
+import 'package:best_architecture_challenge/bloc/movimientos_cubit.dart';
 import 'package:best_architecture_challenge/bloc/post_cubit.dart';
+import 'package:best_architecture_challenge/provider/movimiento_provider.dart';
 import 'package:best_architecture_challenge/provider/rest_provider.dart';
 import 'package:best_architecture_challenge/repository/repository.dart';
+import 'package:best_architecture_challenge/repository/repositoryMovimientos.dart';
+import 'package:best_architecture_challenge/ui/entradas_inventario.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,9 +21,18 @@ void main() {
   Repository repository = RepositoryImp(RestProvider());
   PostCubit postCubit = PostCubit(repository);
 
+  RepositoryMovimiento repositoryMovimiento = RepositoryMovimientoImp(MovimientoProvider());
+  MovimientosCubit movimientoCubit = MovimientosCubit(repositoryMovimiento);
+
   runApp(
-      BlocProvider(
-        create: (_) => postCubit,
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(
+          create: (_) => postCubit),
+
+          BlocProvider(
+              create: (_) => movimientoCubit)
+        ],
         child: MyApp(),
       ));
 }
@@ -47,7 +60,12 @@ class PostPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(title),
+          title: InkWell(
+            onTap: (){
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => EntradasMovimiento()));
+            },
+              child: Text(title)),
           actions: <Widget>[
             PopupMenuButton<SortOptions>(
                 icon: Icon(Icons.more_vert),
